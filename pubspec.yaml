@@ -38,6 +38,10 @@ dependencies:
   cached_network_image_ce: ^4.10.1
   http: ^1.5.0
   flutter_svg: ^2.0.17
+  flutter_staggered_grid_view: any
+  carousel_slider: any
+  smooth_page_indicator: any
+  readmore: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +69,8 @@ flutter:
     - assets/images/onboard_images/
     - assets/images/icon_images/
     - assets/images/home_images/
+    - assets/images/trending_products_images/
+    - assets/images/checkout_images/
   fonts:
     - family: Libre_Caslon_Text
       fonts:

@@ -3,6 +3,10 @@ import 'package:ecommerce_app/helpers/common_widgets/homepage_banner_item_widget
 import 'package:ecommerce_app/models/home_page_banner_item.dart';
 import 'package:ecommerce_app/screens/auth/forgot_password_screen.dart';
 import 'package:ecommerce_app/screens/auth/sign_up_screen.dart';
+import 'package:ecommerce_app/screens/checkout/profile_screen.dart';
+import 'package:ecommerce_app/screens/home/home_screen.dart';
+import 'package:ecommerce_app/screens/products/trending_products_screen.dart';
+import 'package:ecommerce_app/screens/splash/splash_screen.dart';
 import 'package:ecommerce_app/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,24 +19,32 @@ class HomePageScreen extends StatefulWidget{
 
 class _HomePageScreenState extends State<HomePageScreen>{
 
-  int currentPage = 0;
-  PageController pageController = PageController();
+  int selectedIndex = 0;
 
-  List<HomePageBannerItem> pages = [
-    HomePageBannerItem(
-        title: "Choose Products",
-        subTitle: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-        ),
-    HomePageBannerItem(
-        title: "Make Payment",
-        subTitle: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-        ),
-    HomePageBannerItem(
-        title: "Get Your Order",
-        subTitle: "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-        ),
-
+  final List<Widget> screens = [
+    HomeScreen(),
+    TrendingProductsScreen(),
+    SplashScreen(nextScreen: HomePageScreen()),
+    SplashScreen(nextScreen: HomePageScreen()),
+    SplashScreen(nextScreen: HomePageScreen()),
   ];
+
+  void onItemTapped(int index) {
+    if (index < 0 || index >= screens.length) {
+      return;
+    }
+
+    // Close keyboard before changing the page.
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (selectedIndex == index) {
+      return;
+    }
+
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
 
   @override
@@ -48,13 +60,83 @@ class _HomePageScreenState extends State<HomePageScreen>{
 
 
     return Scaffold(
-      backgroundColor: Color(0xFFFDFDFD),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(17,45,17,0),
-        child: Column(
+      bottomNavigationBar: Container(
+          height: 76,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFF000000).withOpacity(0.1), // Shadow color
+                blurRadius: 1, // Softness of shadow
+                offset: const Offset(0, -1), // Position of shadow (upwards)
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            onTap: onItemTapped,
+            currentIndex: selectedIndex,
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Color(0xFFEB3030),
+            unselectedItemColor: Colors.black,
+            selectedLabelStyle: TextStyle(
+              fontSize: 12,
+              fontWeight: .w500,
+              fontFamily: "Montserrat"
+            ),
+            unselectedLabelStyle: TextStyle(
+                fontSize: 12,
+                fontWeight: .w400,
+                fontFamily: "Montserrat"
+            ),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home_outlined,
+                  size: 24,
+                ),
+                label: "Home",
 
-          children: [
-            Container(
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.favorite_border,
+                  size: 20,
+                ),
+                label: "Wishlist",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 20,
+                ),
+                label: "Cart"
+                
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.search,
+                  size: 20,
+                ),
+                label: "Search",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.settings_outlined,
+                  size: 20,
+                ),
+                label: "Setting",
+              ),
+            ],
+          ),
+        ),
+      backgroundColor: Color(0xFFFDFDFD),
+      body: Column(
+
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(17,45,17,0),
+            child: Container(
               height: 55,
               // color: Colors.yellow,
               child: Row(
@@ -88,223 +170,33 @@ class _HomePageScreenState extends State<HomePageScreen>{
                   Container(
                     height: 40,
                     width: 40,
-                    child: CircleAvatar(
+                    child: InkWell(
+                      onTap: (){
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_)=> ProfileScreen())
+                        );
+                      },
+                      child: CircleAvatar(
 
-                      backgroundImage: AssetImage(AppImagesName.profile_image),
+                        backgroundImage: AssetImage(AppImagesName.profile_image_2),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                children: [
-                  Column(
-                    spacing: 15,
-                    children: [
-                      Container(
-                        clipBehavior: Clip.antiAlias,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
-                              blurRadius: 4,
-                              spreadRadius: 0.5,
-                              offset: const Offset(0, 0.5),
-                            ),
-                          ],
-                        ),
-                        child:  Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
+          ),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+              children: [
+                screens[selectedIndex]
 
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                                    hintText: 'Search any Product..',
-                                    hintStyle: const TextStyle(color: Color(0xFFBBBBBB),fontSize: 14,
-                                        fontWeight: .w400,
-                                        fontFamily: "Montserrat"
-
-                                    ),
-                                    // prefixIcon: Padding(
-                                    //   padding: const EdgeInsets.all(10),
-                                    //   child: SvgPicture.asset(AppImagesName.user_login),
-                                    // ),
-                                    prefixIcon: Icon(Icons.search,color: Color(0xFFBBBBBB)),
-                                    suffixIcon: Icon(Icons.mic_none_outlined,color: Color(0xFFBBBBBB)),
-                                    filled: true,
-                                    fillColor: Color(0xFFFFFFFF)
-
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("All Featured",style: TextStyle(
-                            fontWeight: .w600,
-                            fontSize: 18,
-                            fontFamily: "Montserrat"
-                          ),),
-
-                          Row(
-                            spacing: 12,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(6),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.03),
-                                      blurRadius: 4,
-                                      spreadRadius: 0.5,
-                                      offset: const Offset(0, 0.5),
-                                    ),
-                                  ],
-                                ),
-                                height: 25,
-                                width: 60,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text("Sort",style: TextStyle(
-                                      fontFamily: "Montserrat",
-                                      fontSize: 12,
-                                      fontWeight: .w400
-                                    ),),
-                                    Icon(Icons.swap_vert_outlined,size: 18,)
-                                  ],
-                                ),
-
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(6),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.03),
-                                      blurRadius: 4,
-                                      spreadRadius: 0.5,
-                                      offset: const Offset(0, 0.5),
-                                    ),
-                                  ],
-                                ),
-                                height: 25,
-                                width: 60,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text("Filter",style: TextStyle(
-                                      fontFamily: "Montserrat",
-                                      fontSize: 12,
-                                      fontWeight: .w400
-                                    ),),
-                                    Icon(Icons.filter_alt_outlined,size: 18,)
-                                  ],
-                                ),
-
-                              ),
-
-                            ],
-                          )
-                        ],
-                      ),
-                      Container(
-                        clipBehavior: Clip.antiAlias,
-                        height: 85.h,
-                        decoration: BoxDecoration(
-                          // color: Colors.red,
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-
-                        ),
-                        child: Row(
-                          spacing: 15,
-                          children: [
-                            Expanded(
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (builder,index){
-                                  return Container(
-
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      spacing: 4.h,
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 27,
-                                          backgroundImage: AssetImage(AppImagesName.category_1),
-                                        ),
-                                        Text("Beauty",style: TextStyle(
-                                            fontWeight: .w400,
-                                            fontSize: 10,
-                                            fontFamily: "Montserrat"
-                                        ),)
-                                      ],
-                                    ),
-                                  );
-                                },
-                                itemCount: 7,
-                                separatorBuilder: (builder,index){
-                                  return SizedBox(
-                                    width: 16,
-                                  );
-                                },
-
-                              ),
-                            )
-
-                          ],
-                        ),
-                      ),
-                      Container(
-                        clipBehavior: Clip.antiAlias,
-                        height: 345.h,
-                        decoration: BoxDecoration(
-                          // color: Colors.red,
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-
-                        ),
-                        child: Container(
-                          height: 200,
-                          width: 200,
-                          child: PageView.builder(itemCount: pages.length,
-                            controller: pageController,
-                            onPageChanged: (value){
-                              setState(() {
-                                currentPage = value;
-                              });
-                            },
-                            itemBuilder: (context,index){
-                              return HomepageBannerItemWidget(item: pages[index]);
-                            },
-
-                          ),
-                        ),
-
-                      ),
-
-
-                    ],
-                  )
-
-                ],
-              ),
+              ],
             ),
+          ),
 
-          ],
-        ),
+        ],
       ),
     );
 
